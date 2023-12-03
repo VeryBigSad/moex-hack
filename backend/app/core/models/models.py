@@ -8,8 +8,7 @@ class User(Model):
         ordering = ["created_at"]
 
     id = fields.BigIntField(pk=True)
-
-    # todo
+    email = fields.CharField(max_length=255, unique=True)
 
     created_at = fields.DatetimeField(auto_now_add=True)
     updated_at = fields.DatetimeField(auto_now=True)

@@ -1,7 +1,6 @@
 from typing import Any
 
-from core.auth.config import auth_config
-from config import settings
+from settings import config_parameters
 
 
 def get_refresh_token_settings(
@@ -9,11 +8,11 @@ def get_refresh_token_settings(
     expired: bool = False,
 ) -> dict[str, Any]:
     base_cookie = {
-        "key": auth_config.REFRESH_TOKEN_KEY,
+        "key": config_parameters.REFRESH_TOKEN_KEY,
         "httponly": True,
         "samesite": "none",
-        "secure": auth_config.SECURE_COOKIES,
-        "domain": settings.SITE_DOMAIN,
+        "secure": config_parameters.SECURE_COOKIES,
+        "domain": config_parameters.SITE_DOMAIN,
     }
     if expired:
         return base_cookie
@@ -21,5 +20,5 @@ def get_refresh_token_settings(
     return {
         **base_cookie,
         "value": refresh_token,
-        "max_age": auth_config.REFRESH_TOKEN_EXP,
+        "max_age": config_parameters.REFRESH_TOKEN_EXP,
     }

@@ -15,5 +15,3 @@ router = APIRouter(prefix="/lesson")
 async def get_questions():
     """Get a list of all questions"""
     return {"message": "Hello World"}
-
-

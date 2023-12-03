@@ -3,9 +3,9 @@ import asyncio
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
-from settings import config_parameters
-from core.models import init as init_database
 from api import router as root_router
+from core.models import init as init_database
+from settings import config_parameters
 
 
 def create_app() -> FastAPI:
@@ -18,7 +18,7 @@ def create_app() -> FastAPI:
             openapi_url=None,
         )
     else:
-        app= FastAPI(
+        app = FastAPI(
             title="X10-Backend",
             debug=not config_parameters.IS_PROD,
         )

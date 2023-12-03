@@ -23,7 +23,9 @@ def create_access_token(
         "is_admin": user["is_admin"],
     }
 
-    return jwt.encode(jwt_data, config_parameters.JWT_SECRET, algorithm=config_parameters.JWT_ALG)
+    return jwt.encode(
+        jwt_data, config_parameters.JWT_SECRET, algorithm=config_parameters.JWT_ALG
+    )
 
 
 async def parse_jwt_user_data_optional(

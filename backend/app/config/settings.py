@@ -21,7 +21,7 @@ class PostgresDataBaseConfigsModel(BaseModel):
     POSTGRES_DB_NAME: Union[str]
 
 
-class AuthConfig(BaseModel):
+class AuthConfigsModel(BaseModel):
     JWT_ALG: str
     JWT_SECRET: str
     JWT_EXP: int = 5  # minutes
@@ -36,5 +36,6 @@ class ConfigsValidator(
     APIConfigsModel,
     PostgresDataBaseConfigsModel,
     MetaConfigsModel,
+    AuthConfigsModel
 ):
     pass

@@ -16,11 +16,11 @@ RUN poetry config virtualenvs.create false \
     && poetry install --no-dev --no-interaction --no-ansi
 
 # Copy the application code to the container
-COPY ./src /app/src/
+COPY ./app /app
 
 # Copy your entrypoint script
-COPY docker-entrypoint.sh /app/src/docker-entrypoint.sh
-RUN chmod +x /app/src/docker-entrypoint.sh
+COPY docker-entrypoint.sh docker-entrypoint.sh
+RUN chmod +x docker-entrypoint.sh
 
 # Use the entrypoint script to run the application
-ENTRYPOINT ["sh", "/app/src/docker-entrypoint.sh"]
+ENTRYPOINT ["sh", "docker-entrypoint.sh"]

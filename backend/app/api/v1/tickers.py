@@ -1,6 +1,6 @@
 import datetime
 import logging
-from typing import List, Any
+from typing import List
 
 from fastapi import APIRouter, status
 from moexalgo import Market, Ticker
@@ -14,7 +14,7 @@ router = APIRouter()
 
 
 @router.get(
-    "/tickers",
+    "/",
     response_model=List[str],
     status_code=status.HTTP_200_OK,
 )
@@ -28,7 +28,7 @@ async def get_tickers():
 
 
 @router.get(
-    "/tickers/{ticker}/",
+    "/{ticker}/",
     response_model=List[TickerCandleResponse],
     status_code=status.HTTP_200_OK,
 )

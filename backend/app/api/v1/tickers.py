@@ -6,7 +6,7 @@ from fastapi import APIRouter, status
 from moexalgo import Market, Ticker
 
 from core.exceptions import BadRequest
-from core.schemas.tickers import Period, TickerCandleResponse
+from core.schemas.tickers import Period, TickerCandleResponse, TickerResponse
 
 logger = logging.getLogger(__name__)
 
@@ -15,16 +15,20 @@ router = APIRouter()
 
 @router.get(
     "/",
-    response_model=List[str],
+    response_model=List[TickerResponse],
     status_code=status.HTTP_200_OK,
 )
 async def get_tickers():
     """Get a list of all MOEX tickers"""
     # TODO: cache this list via nginx or redis
     stocks = Market('stocks')
-    tickers_pandas = stocks.tickers()
-    tickers = [ticker['SECID'] for ticker in tickers_pandas]
-    return tickers
+    tickers = stocks.tickers()
+
+    data = [
+        {"ticker": ticker['SECID'], "price": ticker['PREVLEGALCLOSEPRICE'], "name": ticker["SECNAME"]} for
+        ticker in tickers
+    ]
+    return data
 
 
 @router.get(

@@ -24,3 +24,9 @@ class TickerPriceRequest(BaseModel):
     period: Period
     date_start: datetime.date
     date_end: datetime.date
+
+
+class TickerResponse(BaseModel):
+    ticker: str
+    price: float
+    name: str

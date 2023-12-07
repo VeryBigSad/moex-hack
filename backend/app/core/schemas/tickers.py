@@ -30,3 +30,4 @@ class TickerResponse(BaseModel):
     ticker: str
     price: float
     name: str
+    is_positive_forecast: bool

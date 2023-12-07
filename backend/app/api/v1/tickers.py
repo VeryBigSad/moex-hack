@@ -1,5 +1,6 @@
 import datetime
 import logging
+import random
 from typing import List
 
 from fastapi import APIRouter, status
@@ -25,8 +26,13 @@ async def get_tickers():
     tickers = stocks.tickers()
 
     data = [
-        {"ticker": ticker['SECID'], "price": ticker['PREVLEGALCLOSEPRICE'], "name": ticker["SECNAME"]} for
-        ticker in tickers
+        {
+            "ticker": ticker["SECID"],
+            "price": ticker["PREVLEGALCLOSEPRICE"],
+            "name": ticker["SECNAME"],
+            "is_positive_forecast": bool(random.randint(0, 1))
+        }
+        for ticker in tickers
     ]
     return data
 

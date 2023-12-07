@@ -13,7 +13,7 @@ router = APIRouter()
 
 
 @router.get(
-    "/news",
+    "/",
     status_code=status.HTTP_200_OK,
     response_model=list[NewsResponse]
 )
@@ -27,7 +27,7 @@ async def get_news():
 
 
 @router.get(
-    "/news/{news_id}",
+    "/{news_id}",
     status_code=status.HTTP_200_OK,
     response_model=DetailedNewsResponse
 )

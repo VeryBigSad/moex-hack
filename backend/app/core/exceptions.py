@@ -11,6 +11,11 @@ class DetailedHTTPException(HTTPException):
         super().__init__(status_code=self.STATUS_CODE, detail=self.DETAIL, **kwargs)
 
 
+class DatabaseInternalError(DetailedHTTPException):
+    STATUS_CODE = status.HTTP_500_INTERNAL_SERVER_ERROR
+    DETAIL = "Server error when fetching data"
+
+
 class PermissionDenied(DetailedHTTPException):
     STATUS_CODE = status.HTTP_403_FORBIDDEN
     DETAIL = "Permission denied"
@@ -18,6 +23,10 @@ class PermissionDenied(DetailedHTTPException):
 
 class NotFound(DetailedHTTPException):
     STATUS_CODE = status.HTTP_404_NOT_FOUND
+
+
+class ArticleNotFound(NotFound):
+    DETAIL = "Article not found"
 
 
 class BadRequest(DetailedHTTPException):

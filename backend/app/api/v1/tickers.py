@@ -7,7 +7,7 @@ from fastapi import APIRouter, status
 from moexalgo import Market, Ticker
 
 from core.exceptions import BadRequest
-from core.schemas.tickers import Period, TickerCandleResponse, TickerResponse
+from core.schemas.tickers import Period, TickerCandleResponse, TickerResponse, RelevantTickerResponse
 
 logger = logging.getLogger(__name__)
 
@@ -51,3 +51,26 @@ async def get_price_for_ticker(ticker: str, date_start: datetime.date, date_end:
 
     candles = list(ticker.candles(date=date_start, till_date=date_end, period=period))
     return candles
+
+
+@router.get(
+    "/{ticker}/relevant/",
+    response_model=List[RelevantTickerResponse],
+    status_code=status.HTTP_200_OK
+)
+async def get_relevant_tickers(ticker: str):
+    """Get a list of relevant tickers for the specified ticker"""
+    stocks = Market('stocks')
+    tickers = stocks.tickers()
+
+    data = [
+        {
+            "ticker": ticker["SECID"],
+            "price": ticker["PREVLEGALCLOSEPRICE"],
+            "name": ticker["SECNAME"],
+            "is_positive_forecast": bool(random.randint(0, 1)),
+            "correlation_score": round(random.random(), 3),
+        }
+        for ticker in tickers
+    ]
+    return random.choices(data, k=10)

@@ -31,3 +31,8 @@ class TickerResponse(BaseModel):
     price: float
     name: str
     is_positive_forecast: bool
+
+
+class RelevantTickerResponse(TickerResponse):
+    correlation_score: float
+

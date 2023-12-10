@@ -1,3 +1,4 @@
+import datetime
 from typing import Optional
 
 from pydantic import BaseModel
@@ -17,5 +18,5 @@ class StrategyFileModel(BaseModel):
 
 class BacktestRequest(BaseModel):
     files: list[StrategyFileModel]
-    date_start: str
-    date_end: str
+    date_start: datetime.date
+    date_end: datetime.date

@@ -172,7 +172,10 @@ plot_tree(clf, filled=True, feature_names=store.columns, rounded=True)
 plt.show()
 
     """
-    tickers_positive = ['ASSB', 'CBOM', 'CHMF', 'GAZP', 'JNOS', 'KBSB', 'LKOH', 'MOEX',
-                        'MTLR', 'OZON', 'ROSN', 'ROST', 'SAGO', 'SBER', 'SIBN', 'SMLT',
-                        'SNGSP', 'UGLD', 'YNDX']
+    tickers_positive = ['AFKS', 'AQUA', 'ASSB', 'BANE', 'CBOM', 'ENPG', 'GAZP', 'GAZT',
+                        'HHRU', 'INGR', 'JNOS', 'KBSB', 'KGKC', 'KRKOP', 'KZOSP', 'LKOH',
+                        'MGTS', 'MOEX', 'MRKZ', 'MSNG', 'MTLR', 'MVID', 'NKNCP', 'OZON',
+                        'PIKK', 'RASP', 'RDRB', 'ROSN', 'ROST', 'SAGO', 'SBER', 'SFIN',
+                        'SGZH', 'SIBN', 'SMLT', 'SNGSP', 'SVET', 'TORS', 'TRNFP', 'UKUZ',
+                        'WTCM', 'WTCMP', 'YNDX']
     return ticker in tickers_positive

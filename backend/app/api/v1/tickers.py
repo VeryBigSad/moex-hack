@@ -61,7 +61,7 @@ async def get_relevant_tickers(ticker: str):
             "price": tickers[ticker_name]["PREVLEGALCLOSEPRICE"],
             "name": get_name(ticker_name) if get_name(ticker_name) else tickers[ticker_name]["SECNAME"],
             "sphere": get_sphere(ticker_name),
-            "is_positive_forecast": bool(random.randint(0, 1)),
+            "is_positive_forecast": get_is_ticker_good(ticker_name),
             "correlation_score": corr,
         }
         for ticker_name, corr in small_corr_tickers

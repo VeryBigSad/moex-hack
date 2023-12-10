@@ -28,6 +28,7 @@ class TickerPriceRequest(BaseModel):
 
 class TickerResponse(BaseModel):
     ticker: str
+    sphere: str
     price: float
     name: str
     is_positive_forecast: bool

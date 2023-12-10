@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 stocks = Market("stocks")
-
+corr_stats = None
 
 def get_ticker_corr(
         ticker: str,
@@ -25,13 +25,15 @@ def get_ticker_corr(
         corr_ratio: float = 0.3,
         start_date: datetime.datetime = datetime.date(2023, 10, 1),
 ):
-    dates = [start_date + datetime.timedelta(days=x) for x in range(days)]
-    stocks_info = pd.concat([pd.DataFrame(stocks.tradestats(date=i)) for i in dates])
-    stocks_info['tradedate'] = stocks_info['ts'].dt.date
-    stocks_info['tradetime'] = stocks_info['ts'].dt.time
-    # for all stocks info,
-    stats = stocks_info.pivot_table(index='tradedate', columns='secid', values='pr_vwap_s', aggfunc='mean')
-    corr_stats = stats.corr()
+    global corr_stats
+    if corr_stats is None:
+        dates = [start_date + datetime.timedelta(days=x) for x in range(days)]
+        stocks_info = pd.concat([pd.DataFrame(stocks.tradestats(date=i)) for i in dates])
+        stocks_info['tradedate'] = stocks_info['ts'].dt.date
+        stocks_info['tradetime'] = stocks_info['ts'].dt.time
+        # for all stocks info,
+        stats = stocks_info.pivot_table(index='tradedate', columns='secid', values='pr_vwap_s', aggfunc='mean')
+        corr_stats = stats.corr()
 
     spl = corr_stats.loc[:, [ticker]]
     l_list = list(spl[(spl[ticker] < corr_ratio) & (spl[ticker] > -corr_ratio)].index)
@@ -99,7 +101,7 @@ async def get_relevant_tickers(ticker: str):
         {
             "ticker": ticker_name,
             "price": tickers[ticker_name]["PREVLEGALCLOSEPRICE"],
-            "name": get_name(ticker_name) if get_name(ticker_name) else ticker[ticker_name]["SECNAME"],
+            "name": get_name(ticker_name) if get_name(ticker_name) else tickers[ticker_name]["SECNAME"],
             "sphere": get_sphere(ticker_name),
             "is_positive_forecast": bool(random.randint(0, 1)),
             "correlation_score": corr,

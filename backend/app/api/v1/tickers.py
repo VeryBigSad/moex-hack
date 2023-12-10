@@ -19,6 +19,7 @@ router = APIRouter()
 stocks = Market("stocks")
 corr_stats = None
 
+
 def get_ticker_corr(
         ticker: str,
         days: int = 10,
@@ -68,22 +69,6 @@ async def get_tickers():
 
 
 @router.get(
-    "/{ticker}/",
-    response_model=List[TickerCandleResponse],
-    status_code=status.HTTP_200_OK,
-)
-async def get_price_for_ticker(ticker: str, date_start: datetime.date, date_end: datetime.date, period: Period):
-    """Get price for ticker over time with specified frequency"""
-    try:
-        ticker = Ticker(ticker.upper())
-    except LookupError:
-        raise BadRequest(detail={"error": f"Ticker {ticker.upper()} not found"})
-
-    candles = list(ticker.candles(date=date_start, till_date=date_end, period=period))
-    return candles
-
-
-@router.get(
     "/{ticker}/relevant/",
     response_model=List[RelevantTickerResponse],
     status_code=status.HTTP_200_OK
@@ -110,3 +95,19 @@ async def get_relevant_tickers(ticker: str):
         if ticker_name in tickers
     ]
     return data
+
+
+@router.get(
+    "/{ticker}/",
+    response_model=List[TickerCandleResponse],
+    status_code=status.HTTP_200_OK,
+)
+async def get_price_for_ticker(ticker: str, date_start: datetime.date, date_end: datetime.date, period: Period):
+    """Get price for ticker over time with specified frequency"""
+    try:
+        ticker = Ticker(ticker.upper())
+    except LookupError:
+        raise BadRequest(detail={"error": f"Ticker {ticker.upper()} not found"})
+
+    candles = list(ticker.candles(date=date_start, till_date=date_end, period=period))
+    return candles

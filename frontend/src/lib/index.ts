@@ -125,3 +125,63 @@ export const Timelines: { id: TimelineOption; name: string }[] = [
 ];
 
 export type File = { name: string; content: string };
+
+export type BacktestResult = {
+    candles: { begin: string, end: string, close: number }[];
+    data: BacktestData;
+};
+
+export type BacktestData = {
+    "Start": string,
+    "End": string,
+    "Duration": string,
+} & BacktestStats;
+
+export type BacktestStats = {
+    "Exposure Time [%]": number,
+    "Equity Final [$]": number,
+    "Equity Peak [$]": number,
+    "Return [%]": number,
+    "Buy & Hold Return [%]": number,
+    "Return (Ann.) [%]": number,
+    "Volatility (Ann.) [%]": number,
+    "Sharpe Ratio": number,
+    "Sortino Ratio": number,
+    "Calmar Ratio": number,
+    "Max. Drawdown [%]": number,
+    "Avg. Drawdown [%]": number,
+    "Max. Drawdown Duration": string,
+    "Avg. Drawdown Duration": string,
+    "# Trades": number,
+    "Win Rate [%]": number,
+    "Best Trade [%]": number,
+    "Worst Trade [%]": number,
+    "Avg. Trade [%]": number,
+    "Max. Trade Duration": string,
+    "Avg. Trade Duration": string,
+    "Profit Factor": number,
+    "Expectancy [%]": number,
+    "SQN": number
+};
+
+export async function runBacktest(files: File[], date_start: string, date_end: string): Promise<BacktestResult[]> {
+    let _files = files.map(file => {
+        let id = Math.floor(Math.random() * 999999999);
+        return { id, ...file };
+    });
+    let response = fetch(path("backtest/backtest"), {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            files: _files,
+            date_start,
+            date_end
+        })
+    });
+    let id = Number(await response.then(r => r.text()));
+    let results: BacktestResult[] = await fetch(path(`backtest/${id}/progress`))
+        .then(a => a.json());
+    return results;
+}

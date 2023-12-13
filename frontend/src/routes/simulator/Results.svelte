@@ -1,44 +1,48 @@
 <script lang="ts">
-    import { Timelines, type File } from "$lib";
-    import OptionList from "$lib/OptionList.svelte";
+    import { type File, runBacktest } from "$lib";
     import Plot from "$lib/Plot.svelte";
     import { writable } from "svelte/store";
     import InfoButton from "$lib/InfoButton.svelte";
-    import ProgressBar from "$lib/ProgressBar.svelte";
-    import { json } from "@sveltejs/kit";
-
-    let timeline = Timelines[1];
-
-    const stats = [
-        { name: "Starting Balance", value: "1000$" },
-        { name: "Final Balance", value: "15051$" },
-        { name: "Total Profit", value: "14051$" },
-        { name: "Avg Daily Product", value: "141$" },
-        { name: "Avg Stake Amount", value: "23$" },
-        { name: "Best Trade", value: "100$" },
-        { name: "Worst Trade", value: "-21$" }
-    ];
+    import type { Data, PlotData } from "plotly.js-dist";
+    import ProgressButton from "./ProgressButton.svelte";
 
     export let files: File[];
     export let file: File;
 
+    let stats: { name: string; value: string }[][] = [];
+    $: _stats = stats.length > 0 ? stats[0] : [];
+
+    let loading = false;
+
+    let plot_data = writable<Data[]>([]);
     let start_backtest = async () => {
-        let _files = files.map(file => {
-            let id = Math.floor(Math.random() * 999999999);
-            return { id, ...file };
-        });
-        let data = fetch("https://khromdev.ru/api/v1/backtest/backtest", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                files: _files,
-                date_start,
-                date_end
-            })
-        });
-        data.then(a => a.text()).then(a => console.log(a));
+        loading = true;
+        stats = [];
+        const colors = ["#72DEE5", "#7472E5", "#D572E5", "#E5B072", "#E3E572"];
+        try
+        {
+            let result: Partial<PlotData>[] = [];
+            let algorithms = await runBacktest(files, date_start, date_end);
+            for (const [index, { data, candles }] of algorithms.entries()) {
+                let x = [];
+                let y = [];
+                for (const { begin, close } of candles) {
+                    x.push(begin);
+                    y.push(close);
+                }
+                stats.push(
+                    Object.entries(data).map(dat => ({ name: dat[0], value: dat[1].toString() }))
+                );
+                stats = stats;
+                result.push({ x, y, line: { color: colors[index % colors.length] } });
+            }
+            plot_data.set(result);
+        }
+        catch
+        {
+            alert("Ошибка! Попробуйте поменять даты бектеста."); // TODO
+        }
+        loading = false;
     };
 
     let date_start: string;
@@ -57,14 +61,12 @@
             <span>Конец теста</span>
             <input type="date" bind:value={date_end} />
         </div>
-        <button on:click={start_backtest} disabled={!start_enabled}>
-            Запустить
-            <img src="/icons/arrow_back.svg" alt="" />
-        </button>
+        <ProgressButton on:click={start_backtest} disabled={!start_enabled} {loading} />
     </div>
-    <OptionList options={Timelines} bind:selected={timeline} />
     <hr />
-    <Plot data={writable([])} />
+    <div style="height=250px;">
+        <Plot data={plot_data} />
+    </div>
     <hr />
     <div class="label">
         <img src="/icons/eye_open.svg" alt="selected graph" />
@@ -72,23 +74,10 @@
         <InfoButton />
     </div>
     <div class="stats">
-        {#each stats as value}
+        {#each _stats as value}
             <div>
                 <span>{value.name}</span>
                 <span>{value.value}</span>
-            </div>
-        {/each}
-    </div>
-    <div class="algos">
-        {#each files as algo}
-            <div>
-                {#if file == algo}
-                    <img src="/icons/eye_open.svg" alt="" />
-                {:else}
-                    <img src="/icons/eye_closed.svg" alt="" />
-                {/if}
-                <span>{algo.name}</span>
-                <ProgressBar percent={50} />
             </div>
         {/each}
     </div>
@@ -132,18 +121,17 @@
             display: flex;
             flex-direction: column;
             gap: 4px;
-        }
-        > button {
-            margin-left: auto;
-            background-color: var(--good-color);
-            border-radius: 12px;
-            padding: 8px 16px;
+            > input {
+                color: white;
+                background-color: transparent;
+                text-decoration: dashed;
+            }
         }
     }
 
     .stats {
         display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-columns: 1fr 1fr;
         margin-bottom: 20px;
         gap: 12px;
         overflow-x: scroll;
@@ -153,25 +141,6 @@
             border-radius: 12px;
             > span:nth-child(1) {
                 white-space: nowrap;
-            }
-        }
-    }
-
-    .algos {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-        overflow-y: scroll;
-        > div {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            > img {
-                width: 16px;
-                height: 16px;
-            }
-            > span {
-                flex: 1;
             }
         }
     }

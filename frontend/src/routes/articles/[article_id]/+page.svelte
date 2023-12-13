@@ -22,15 +22,16 @@
 </script>
 
 <article>
-    {#if data.article.source.name}
     <section class="header">
+        {#if data.article.source.name}
         <h1>Источник</h1>
         <a href={data.article.source.href}>{data.article.source.name}</a>
+        {/if}
+        <a class="up" href="#up">↑ Наверх</a>
     </section>
-    {/if}
     <section class="main">
         <section class="table">
-            <h1 class="title">Содержание</h1>
+            <h1 id="up" class="title">Содержание</h1>
             {#each headers as header, i}
                 <a href={`#header-${i}`}>{header}</a>
             {/each}
@@ -59,6 +60,10 @@
                 border-right: 1px solid #57595e;
                 margin-right: 8px;
                 margin-left: 30px;
+                .up {
+                    margin-top: auto;
+                    text-align: center;
+                }
             }
         }
     }

@@ -36,7 +36,7 @@ async def start_backtesting(data: BacktestRequest):
     # get data
 
     for i in data.files:
-        s = await StrategyModel.create(backtest=backtest, name=i.name, source=i.content)
+        s = await StrategyModel.create(backtest=backtest, pk=i.id, name=i.name, source=i.content)
         # try to run the strategy
         # find name from source - it should be defined like class <name>(Strategy)
         # get class by name from local variables

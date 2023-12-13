@@ -17,6 +17,7 @@ class StrategyTestedResponse(BaseModel):
 
 
 class StrategyFileModel(BaseModel):
+    id: int
     name: str
     content: str
 

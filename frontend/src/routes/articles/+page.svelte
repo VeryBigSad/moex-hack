@@ -1,15 +1,12 @@
 <script lang="ts">
     import Loader from "$lib/Loader.svelte";
-    import type { ArticleInfo } from "$lib/articles.server";
-    import type { PageServerData } from "./$types";
+    import type { LayoutServerData } from "./$types";
 
-    export let data: PageServerData;
-
-    let articles: ArticleInfo[] = data.articles;
+    export let data: LayoutServerData;
 </script>
 
 <main>
-    {#await articles}
+    {#await data.articles}
         <Loader/>
     {:then articles}
         {#each articles as article}

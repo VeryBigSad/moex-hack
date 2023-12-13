@@ -2,14 +2,26 @@
     import type { File } from "$lib";
 
     export let files: File[];
-    export let selected: File;
+    export let selected: File | undefined;
+
+    let close = (i: number) => {
+        files.splice(i, 1);
+        if (files.length != 0)
+        {
+            selected = files[i >= files.length ? i - 1 : i];
+        }
+        else
+        {
+            selected = undefined;
+        }
+    }
 </script>
 
 <menu>
     {#each files as file, i}
         <button on:click={() => (selected = file)} class:selected={selected == file}>
             <span>{file.name}</span>
-            <button class="close" on:click={() => files.splice(i, 1)}>
+            <button class="close" on:click|stopPropagation={() => close(i)}>
                 <img src="/icons/close.svg" alt="close" />
             </button>
         </button>

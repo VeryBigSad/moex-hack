@@ -41,8 +41,8 @@
 
         height: 100dvh;
         width: 100dvw;
-        padding: 40px 50px;
         background-color: var(--page-background);
+        padding: 40px max(50px, calc((100vw - 1440px) / 2));
 
         > nav {
             flex: 0 0 64px;

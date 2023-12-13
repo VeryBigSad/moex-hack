@@ -1,0 +1,85 @@
+<h2>Шаг 1: Создание Стратегии</h2>
+<ol>
+    <li><b>Создайте новый файл стратегии</b> Создайте Python файл (например, <code>my_strategy.py</code>).</li>
+    <li><b>Наследуйтесь от класса <code>IStrategy</code></b>: Это базовый класс для создания стратегий в Freqtrade.</li>
+    <pre><code>from freqtrade.strategy.interface import IStrategy
+        class MyStrategy(IStrategy):
+            pass</code></pre>
+</ol>
+
+<h2>Шаг 2: Определение Параметров</h2>
+<ol>
+    <li>Установите минимальные параметры: Определите необходимые параметры, такие как minimal_roi, stoploss, и
+        trailing_stop.</li>
+    <li>Определите индикаторы: Используйте библиотеки, такие как TA-Lib, для создания технических индикаторов.</li>
+    <pre><code>def populate_indicators(self, dataframe: DataFrame) -> DataFrame:
+    # пример: SMA (простая скользящая средняя)
+    dataframe['sma'] = ta.SMA(dataframe, timeperiod=20)
+    return dataframe</code></pre>
+</ol>
+
+<h2>Шаг 3: Торговые Сигналы</h2>
+<ol>
+    <li>
+        <p>
+            Определите условия для входа: Укажите, когда ваша стратегия должна входить в позицию.
+        </p>
+    </li>
+    <pre><code>def populate_buy_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+    # Пример условия на покупку
+    dataframe.loc[
+        (
+        (dataframe['sma'] > dataframe['close']) # Пример условия
+        ),
+        'buy'
+    ] = 1
+    return dataframe</code></pre>
+    <li>
+        <p>
+            Определите условия для выхода: Аналогично укажите, когда стратегия должна выходить из позиции.
+        </p>
+    </li>
+<pre><code>def populate_sell_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+# Пример условия на продажу
+dataframe.loc[
+    (
+        (dataframe['sma'] < dataframe['close']) # Пример условия
+    ),
+    'sell'] = 1
+return dataframe</code></pre>
+    </li>
+</ol>
+
+<h2>Шаг 4: Тестирование Стратегии</h2>
+<ol>
+    <li>
+        <p>
+            Тестирование на исторических данных: Используйте команду freqtrade backtesting --strategy MyStrategy для
+            тестирования вашей стратегии на исторических данных.
+        </p>
+    </li>
+    <li>
+        <p>
+            Анализ результатов: Анализируйте результаты, чтобы определить эффективность стратегии.
+        </p>
+    </li>
+</ol>
+
+<h2>Шаг 5: Оптимизация и Тонкая Настройка</h2>
+<ol>
+    <li>
+        <p>Оптимизируйте параметры: Используйте гипероптимизацию для настройки параметров стратегии.</p>
+    </li>
+    <li>
+        <p>
+            Повторяйте тестирование и настройку: Повторяйте тесты и настройки, пока не достигнете удовлетворительных
+            результатов.
+        </p>
+    </li>
+</ol>
+
+<h2>Шаг 6: Запуск на Реальном Рынке</h2>
+<p>
+    Запустите стратегию в реальных торговых условиях: Используйте команду freqtrade trade --strategy MyStrategy для
+    запуска стратегии в реальных условиях рынка.
+</p>

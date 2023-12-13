@@ -20,7 +20,7 @@
     font-family: 'Source Code Pro', monospace;
 }
 
-p, span {
+p, span, li {
     color: var(--text);
     font-size: 14px;
     line-height: 16px;
@@ -28,6 +28,10 @@ p, span {
 
 a {
     color: var(--good-color);
+}
+
+ol, ul {
+    padding-left: 40px;
 }
 
 .big-text,
@@ -44,11 +48,6 @@ h6 {
 
 h1, h2 {
     font-weight: bold;
-}
-
-ol,
-ul {
-    list-style: none;
 }
 
 hr {

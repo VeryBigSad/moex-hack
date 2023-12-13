@@ -56,6 +56,9 @@
         </button>
     </header>
     <section>
+        {#if $portfolio.size == 0}
+            <p><b>Пусто!</b><br/><br/>Добавьте акцию в портфель, и она отобразится здесь.</p>
+        {/if}
         {#each $portfolio.values() as share}
             <Share {share} icon="hide" />
         {/each}
@@ -91,6 +94,19 @@
             padding-right: 20px;
             margin-right: -20px;
             scrollbar-color: var(--text) transparent;
+            > p {
+                flex: 1;
+                align-self: center;
+                text-align: center;
+                font-size: 18px;
+                line-height: 21px;
+                margin-top: 50px;
+                > b {
+                    font-size: 30px;
+                    line-height: 34px;
+                    font-weight: bold;
+                }
+            }
         }
     }
 </style>

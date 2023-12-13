@@ -142,22 +142,17 @@
     }
 
     .stats {
-        display: flex;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
         margin-bottom: 20px;
         gap: 12px;
         overflow-x: scroll;
         > div {
             display: flex;
             flex-direction: column;
-            padding: 0 20px;
-            border: 1px solid #57595e;
             border-radius: 12px;
             > span:nth-child(1) {
                 white-space: nowrap;
-            }
-            > span:nth-child(2) {
-                font-size: 20px;
-                line-height: 24px;
             }
         }
     }

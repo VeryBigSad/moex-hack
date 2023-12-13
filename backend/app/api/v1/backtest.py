@@ -48,13 +48,18 @@ async def start_backtesting(data: BacktestRequest):
         # copy locals to globals
         globals().update(locals())
         # run backtest
-        bt = Backtest(df, strategy_class, cash=100_000, commission=.0005)
+        # copy df, cut it by date_start and date_end
+        df_copy = df.loc[data.date_start:data.date_end]
+        bt = Backtest(df_copy, strategy_class, cash=100_000, commission=.0005)
         try:
             stats = bt.run()
         except Exception as e:
             logger.exception(e)
             raise HTTPException(status_code=400, detail="Invalid import")
-        results[s.pk] = stats.to_dict()
+        stats_dict = stats.to_dict()
+        stats_dict["start_date"] = data.date_start
+        stats_dict["end_date"] = data.date_end
+        results[s.pk] = stats_dict
 
     return backtest.pk
 
@@ -88,7 +93,8 @@ async def get_progress(backtest_id: int):
         portfolio_value = initial_portfolio_value
 
         # Create a DataFrame for portfolio value
-        portfolio_df = pd.DataFrame(index=df.index, columns=['Close'])
+        copy_df = df.loc[dict_repr["date_start"]:dict_repr["date_end"]]
+        portfolio_df = pd.DataFrame(index=copy_df.index, columns=['Close'])
         portfolio_df['Close'] = portfolio_value
 
         # Iterate through the trades and update the portfolio value

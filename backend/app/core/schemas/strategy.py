@@ -1,17 +1,23 @@
 import datetime
-from typing import Optional
+from typing import List
 
 from pydantic import BaseModel
 
 
-class StrategyProgressResponse(BaseModel):
+class BackTestCandle(BaseModel):
+    begin: datetime.datetime
+    end: datetime.datetime
+    close: float
+
+
+class StrategyTestedResponse(BaseModel):
     strategy_id: int
-    status: str
-    progress: Optional[float]
-    profit: Optional[float]
+    candles: List[BackTestCandle]
+    data: dict
 
 
 class StrategyFileModel(BaseModel):
+    id: int
     name: str
     content: str
 

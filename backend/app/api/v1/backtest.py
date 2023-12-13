@@ -1,6 +1,4 @@
-import datetime
 import logging
-import random
 from typing import List
 
 import pandas as pd
@@ -56,8 +54,7 @@ async def start_backtesting(data: BacktestRequest):
         except Exception as e:
             logger.exception(e)
             raise HTTPException(status_code=400, detail="Invalid import")
-        print(stats)
-        results[backtest.pk] = stats.to_dict()
+        results[s.pk] = stats.to_dict()
 
     return backtest.pk
 
@@ -77,18 +74,40 @@ async def get_progress(backtest_id: int):
     # get all strategies by backtest id
     strategies = await StrategyModel.filter(backtest=backtest)
     res = []
-    dict_repr = results[backtest_id]
-    dict_repr = {k: v for k, v in dict_repr.items() if k[0] != '_'}
+
     for i in strategies:
         # 1 hour intervals from 9am to 8pm for 90 days
-        candles = []
-        for j in range(90 * 11):
-            candles.append(
-                BackTestCandle(
-                    begin=datetime.datetime(2021, 1, 1, 9) + datetime.timedelta(hours=j),
-                    end=datetime.datetime(2021, 1, 1, 10) + datetime.timedelta(hours=j),
-                    close=(candles[-1].close if len(candles) != 0 else 400) + random.randint(-2, 2)
-                )
-            )
-        res.append(StrategyTestedResponse(strategy_id=i.pk, candles=candles, data=dict_repr))
+        dict_repr = results[i.pk]
+        trades_df = dict_repr['_trades']
+        # Assuming trades_df is your DataFrame with trade data
+        trades_df['EntryTime'] = pd.to_datetime(trades_df['EntryTime'])
+        trades_df['ExitTime'] = pd.to_datetime(trades_df['ExitTime'])
+
+        # Initialize the starting portfolio value
+        initial_portfolio_value = 100_000  # Adjust as per your initial portfolio value
+        portfolio_value = initial_portfolio_value
+
+        # Create a DataFrame for portfolio value
+        portfolio_df = pd.DataFrame(index=df.index, columns=['Close'])
+        portfolio_df['Close'] = portfolio_value
+
+        # Iterate through the trades and update the portfolio value
+        for _, trade in trades_df.iterrows():
+            # Calculate the trade's impact on the portfolio
+            trade_effect = trade['Size'] * (trade['ExitPrice'] - trade['EntryPrice'])
+            # Update the portfolio value from trade's entry time to exit time
+            portfolio_df.loc[trade['EntryTime']:trade['ExitTime'], 'Close'] += trade_effect
+
+        # Forward fill the portfolio values
+        portfolio_df.ffill(inplace=True)
+
+        # Create a list of BackTestCandle objects
+        backtest_candles = [
+            BackTestCandle(begin=row.Index, end=row.Index + pd.Timedelta(hours=1), close=row.Close)
+            for row in portfolio_df.itertuples()
+        ]
+
+        dict_repr = {k: v for k, v in dict_repr.items() if k[0] != '_'}
+        res.append(StrategyTestedResponse(strategy_id=i.pk, candles=backtest_candles, data=dict_repr))
+    print(res)
     return res

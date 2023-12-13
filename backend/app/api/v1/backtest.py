@@ -93,7 +93,7 @@ async def get_progress(backtest_id: int):
         portfolio_value = initial_portfolio_value
 
         # Create a DataFrame for portfolio value
-        copy_df = df.loc[dict_repr["date_start"]:dict_repr["date_end"]]
+        copy_df = df.loc[dict_repr["start_date"]:dict_repr["end_date"]]
         portfolio_df = pd.DataFrame(index=copy_df.index, columns=['Close'])
         portfolio_df['Close'] = portfolio_value
 
